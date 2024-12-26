@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 class Variabels {
-  static String baseUrl = "https://34ab-103-182-81-105.ngrok-free.app";
+  static String baseUrl = "https://ayonabung.rap4ccel.my.id";
   static String imageUrl = baseUrl + "images/";
 }
 

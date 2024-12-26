@@ -8,4 +8,5 @@ abstract class RouteName {
   static const String history = '/history';
   static const String profile = '/profile';
   static const String location = '/location';
+  static const String payment = '/payment';
 }

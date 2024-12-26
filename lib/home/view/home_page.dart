@@ -29,10 +29,18 @@ class HomePage extends GetView<HomeController> {
                     name: product.name,
                     price: product.price.toString(),
                     image: product.image,
+                    onPressed: () {
+                      Get.toNamed(
+                        RouteName.location,
+                        arguments: {
+                          'productId': product.id,
+                          'price': product.price
+                        },
+                      );
+                    },
                   );
                 },
-                separatorBuilder: (context, index) =>
-                    SizedBox(height: 10), // Space between items
+                separatorBuilder: (context, index) => SizedBox(height: 10),
               );
             }
           }),
@@ -46,11 +54,13 @@ class ProductCard extends StatelessWidget {
   final String name;
   final String price;
   final String image;
+  final Function() onPressed;
   const ProductCard(
       {super.key,
       required this.name,
       required this.price,
-      required this.image});
+      required this.image,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +82,8 @@ class ProductCard extends StatelessWidget {
           const SizedBox(width: 100),
           ElevatedButton(
               onPressed: () {
-                Get.toNamed(RouteName.location);
+                onPressed();
+                // Get.toNamed(RouteName.payment);
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: ColorsData.primaryColor),

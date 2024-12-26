@@ -10,7 +10,9 @@ import 'package:payment_gateway_ongkir/home/view/home_page.dart';
 import 'package:payment_gateway_ongkir/login/controllers/login_controller.dart';
 import 'package:payment_gateway_ongkir/login/view/login_page.dart';
 import 'package:payment_gateway_ongkir/order/controller/location_controller.dart';
+import 'package:payment_gateway_ongkir/order/controller/payment_controller.dart';
 import 'package:payment_gateway_ongkir/order/view/location_page.dart';
+import 'package:payment_gateway_ongkir/order/view/payment_page.dart';
 import 'package:payment_gateway_ongkir/profile/controller/profile_controller.dart';
 import 'package:payment_gateway_ongkir/profile/view/profile_page.dart';
 import 'package:payment_gateway_ongkir/register/controller/otp_controller.dart';
@@ -81,5 +83,11 @@ class AppPages {
         Get.put(LocationController());
       }),
     ),
+    GetPage(
+        name: RouteName.payment,
+        page: () => const PaymentPage(),
+        binding: BindingsBuilder(() {
+          Get.put(PaymentController());
+        })),
   ];
 }

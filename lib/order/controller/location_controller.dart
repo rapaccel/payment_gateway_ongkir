@@ -1,6 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:midtrans_sdk/midtrans_sdk.dart';
+import 'package:payment_gateway_ongkir/assets/variabels/variabels.dart';
 
 class LocationController extends GetxController {
   var shippingCost = 0.obs;
@@ -9,11 +13,26 @@ class LocationController extends GetxController {
   var cities = <City>[].obs;
   var selectedProvinceId = 0.obs;
   var selectedCityId = 0.obs;
+  late int productId;
+  var visible = false.obs;
+  late MidtransSDK _midtrans;
+  late int price;
 
   @override
   void onInit() {
+    initSDK();
+    productId = Get.arguments['productId'] as int;
+    price = Get.arguments['price'] as int;
+
+    print("productId: $price");
     super.onInit();
     fetchProvinces();
+  }
+
+  void onClick() {
+    _midtrans.startPaymentUiFlow(
+      token: "377bd98b-f57f-48e1-bb3d-72786191a67f",
+    );
   }
 
   @override
@@ -21,9 +40,64 @@ class LocationController extends GetxController {
     super.onReady();
   }
 
+  void initSDK() async {
+    final url = Variabels.baseUrl;
+    _midtrans = await MidtransSDK.init(
+      config: MidtransConfig(
+        enableLog: true,
+        clientKey: "SB-Mid-client-wUD7dKxLJFvpwSSr",
+        merchantBaseUrl: "$url/api/midtrans/notify/",
+        colorTheme: ColorTheme(
+          colorPrimary: ColorsData.primaryColor,
+          colorPrimaryDark: ColorsData.primaryColor,
+          colorSecondary: ColorsData.secondaryColor,
+        ),
+      ),
+    );
+    _midtrans.setUIKitCustomSetting(
+      skipCustomerDetailsPages: true,
+    );
+    _midtrans.setTransactionFinishedCallback((result) {
+      print(result.toJson());
+    });
+  }
+
+  @override
+  void dispose() {
+    _midtrans.removeTransactionFinishedCallback();
+    super.dispose();
+  }
+
+  klikOrder() {
+    final url = Variabels.baseUrl;
+    final userId = GetStorage().read('id');
+    final totalPrice = price + shippingCost.value;
+    final data = {
+      'product_id': productId.toString(),
+      'user_id': userId.toString(),
+      'total_price': totalPrice.toString(),
+    };
+    http.post(Uri.parse("$url/api/orders/store"), body: data).then((response) {
+      var result = jsonDecode(response.body);
+      var message = result['message'];
+      if (response.statusCode == 200) {
+        _midtrans.startPaymentUiFlow(
+          token: result['snap_token'],
+        );
+      } else {
+        Get.snackbar('Error', message,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            icon: const Icon(Icons.error),
+            snackPosition: SnackPosition.BOTTOM);
+      }
+    });
+  }
+
   // Fungsi untuk mendapatkan data provinsi
   Future<void> fetchProvinces() async {
     try {
+      visible.value = true;
       isLoading.value = true;
       var url = 'https://api.rajaongkir.com/starter/province';
       var response = await http.get(

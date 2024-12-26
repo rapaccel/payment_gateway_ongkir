@@ -26,6 +26,7 @@ class LocationPage extends GetView<LocationController> {
                     : controller.selectedProvinceId.value,
                 onChanged: (value) {
                   if (value != null) {
+                    controller.visible.value = true;
                     controller.selectedProvinceId.value = value;
                     controller.selectedCityId.value = 0;
                     controller.fetchCities(value);
@@ -54,6 +55,7 @@ class LocationPage extends GetView<LocationController> {
                     : controller.selectedCityId.value,
                 onChanged: (value) {
                   if (value != null) {
+                    controller.visible.value = false;
                     controller.selectedCityId.value = value;
                     controller.shippingCost.value = 0;
                     controller
@@ -72,6 +74,21 @@ class LocationPage extends GetView<LocationController> {
               return controller.shippingCost.value > 0
                   ? Text('Ongkir: Rp ${controller.shippingCost.value}')
                   : Container();
+            }),
+            SizedBox(height: 20),
+            Obx(() {
+              if (controller.visible.value) {
+                return Text('Please select province and city');
+              }
+              return ElevatedButton(
+                onPressed: () {
+                  controller.klikOrder();
+                },
+                child: Text('Order', style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                ),
+              );
             }),
           ],
         ),

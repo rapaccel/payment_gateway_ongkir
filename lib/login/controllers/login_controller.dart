@@ -56,6 +56,14 @@ class LoginController extends GetxController {
       var message = result['message'];
       if (response.statusCode == 200) {
         Get.offAllNamed(RouteName.bottomNav);
+        final user = result['user'];
+        GetStorage().write('id', user['id']);
+        GetStorage().write('name', user['name']);
+        GetStorage().write('email', user['email']);
+        GetStorage().write('phone_number', user['phone_number']);
+        GetStorage().write('id', result['id']);
+        print(
+            'name: ${user['name']}, email: ${user['email']}, phone_number: ${user['phone_number']}');
         Get.snackbar("success", message,
             backgroundColor: Colors.green,
             colorText: Colors.white,
